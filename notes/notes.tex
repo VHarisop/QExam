@@ -1,0 +1,67 @@
+\documentclass[a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{../latex-macros/macros/latex-macros}
+\usepackage{subcaption}
+
+% Use hyperref, color links in text
+\usepackage[
+	colorlinks 	= true,
+	linkcolor 	= blue,
+	urlcolor 	= blue,
+	citecolor 	= blue,
+	anchorcolor = blue]{hyperref}
+
+% Several math packages to use
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{bm, cancel}
+
+\usepackage[boxruled]{algorithm2e}
+\usepackage{caption}
+\newenvironment{code}{\captionsetup{type=listing}}{}
+
+% Include pgfplots / tikz options here
+% PStricks package
+\usepackage{pst-eucl}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{
+    matrix,chains,positioning,decorations.pathreplacing,arrows,patterns}
+\pgfplotsset{compat=newest, clip bounding box=default tikz}
+\usepgfplotslibrary{fillbetween}
+
+\usepackage[capitalize]{cleveref}
+% Allow floats within equations to split
+\allowdisplaybreaks
+\setlength\parindent{0pt}
+
+\usepackage[square,numbers,sort]{natbib}
+
+\begin{document}
+
+% Title here
+\title{\textsc{
+	Notes for \textit{Randomized Sketches of Convex Programs with Sharp
+	Guarantees}}}
+\author{
+    \textsc{Vasileios Charisopoulos}\thanks{\quad
+        School of Operations Research and Information Engineering, Cornell University,
+        Ithaca, NY 14850, USA.
+   \email{vc333@cornell.edu}}}
+\date{\today}
+\maketitle
+
+% As a general rule, do not put math, special symbols or citations
+% in the abstract or keywords.
+\begin{abstract}
+This is a set of notes covering Pilanci \& Wainwright's \textit{Randomized
+Sketches of Convex Programs with Sharp Guarantess}~\cite{PilWain15}. Emphasis
+is given on the proof techniques, with additional explanations given for
+several proofs.
+\end{abstract}
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

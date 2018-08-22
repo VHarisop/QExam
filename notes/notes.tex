@@ -4,14 +4,6 @@
 \usepackage{../latex-macros/macros/latex-macros}
 \usepackage{subcaption}
 
-% Use hyperref, color links in text
-\usepackage[
-	colorlinks 	= true,
-	linkcolor 	= blue,
-	urlcolor 	= blue,
-	citecolor 	= blue,
-	anchorcolor = blue]{hyperref}
-
 % Several math packages to use
 \usepackage{amsmath, amssymb, amsthm}
 \usepackage{bm, cancel}
@@ -22,7 +14,8 @@
 
 % Include pgfplots / tikz options here
 % PStricks package
-\usepackage{pst-eucl}
+\usepackage{pstricks}
+\usepackage{pstricks-add}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usetikzlibrary{
@@ -36,6 +29,7 @@
 \setlength\parindent{0pt}
 
 \usepackage[square,numbers,sort]{natbib}
+\usepackage{svg}
 
 \begin{document}
 
@@ -60,6 +54,35 @@ is given on the proof techniques, with additional explanations given for
 several proofs.
 \end{abstract}
 
+\paragraph{Details for Corollary 2}
+Consider $r := \rank(A)$. In that case, any element $v \in \mathrm{Im}(A)$ can
+be written as
+\[
+    v = \sum_{i=1}^{r} \lambda_i a_i, \; \lambda_i \in \Rbb,
+    \; a_i^\top a_j = \begin{cases}
+        1, & i = j \\
+        0, & i \neq j
+    \end{cases}.
+\]
+In other words, $\set{a_i}_{i=1}^r$ is an orthonormal basis of $A$. We can thus
+write
+\begin{align*}
+    \sup_{u \in \Rbb^d} \frac{\abs{\ip{Au, g}}}{\norm{Au}_2} &=
+    \sup_{\bm{\lambda}} \frac{\abs{\sum_{i=1}^r \lambda_i a_i^\top g}}{
+        \norm{\sum_{i=1}^r \lambda_i a_i}_2} \\
+    &= \sup_{\lambda}
+        \abs{\sum_{i=1}^r \frac{\lambda_i}{\norm{\lambda}_2} a_i^\top g} \\
+    &= \sup_{\eta \in \Sbb^{\rank(A) - 1}} \abs{\eta^\top \tilde{g}}
+\end{align*}
+Notice that $a_i^\top g \perp a_j^\top g$, since orthogonal transformations of
+Gaussian variables lead to independent gaussian variables. Therefore,
+$\tilde{g} \sim \cN(0, I_r)$ itself. From the above:
+\begin{align*}
+    \expec{\sup_{u \in \Rbb^d} \frac{\abs{\ip{Au, g}}}{\norm{Au}_2}} &=
+    \expec{\sup_{\eta \in \Sbb^{\rank(A) - 1}} \abs{\eta^\top \tilde{g}}} \leq
+    \expec{\norm{\tilde{g}}_2} =
+    \sqrt{\rank(A)}.
+\end{align*}
 
 \bibliographystyle{plain}
 \bibliography{references}

@@ -2,13 +2,20 @@
 
 \usepackage{default}
 \usepackage{../latex-macros/macros/latex-macros}
-\usefonttheme[onlymath]{serif}
+%\usefonttheme[onlymath]{serif}
+\usefonttheme{professionalfonts}
+\usepackage{svg}
+\usepackage{pgf,tikz}
+\usetikzlibrary{arrows}
+\usepackage{mathrsfs}
 
 \mode<presentation>
 {
     \usetheme
     [navbar=true,colorblocks=true,pagenumbers=true]{Cornell}
 }
+
+\newcommand{\xstar}{x^{\star}}
 
 \begin{document}
 
@@ -73,21 +80,42 @@
 \begin{frame}{Random projections}
     %TODO: Cite JL
     Random projections go back at least as far as 1984: Johnson and 
-    Lindenstrauss showed that we can project a set of $m$ points
-    in a subspace of dimension $\sim \frac{\log m}{\epsilon^2}$ without 
-    distorting the distances between them more than $\epsilon$.
+    Lindenstrauss showed that we can project a set of $m$ points from $\Rbb^d$
+    in a subspace of dimension $\Theta\left( \frac{\log m}{\epsilon^2} \right)$ 
+    without distorting the distances between them more than $\epsilon$.
+    \linebreak[2]
+    \textbf{General idea}: project to low dimensional subspace and solve the 
+    problem efficiently there.
+\end{frame}
+
+\begin{frame}{Sketching for quadratic programs}
+    Convex program:
+    \[
+        \xstar \in \argmin_{x \in \cC} \overbrace{\norm{Ax - y}_2^2}^{f(x)},
+        \quad A \in \Rbb^{n \times d}, y \in \Rbb^n.
+    \]
+    
+    \textbf{Sketched} program:
+    \[
+        \xhat = \argmin_{x \in \cC} \norm{{\color{blue} S}(Ax - y)}_2^2, 
+        \quad S \in \Rbb^{m \times n}, \; m < n.
+    \]
+    
+    \only{\textbf{\color{red} Question:}
+    \[
+        m \geq \; ??? \Rightarrow f(\xhat) \leq (1 + \delta)^2 f(\xstar)
+    \]}<2->
 \end{frame}
 
 %% Fundamental dependence
 \begin{frame}{Key quantities}
-    Sketching fundamentally relies on a few key quantities:
     \only<1>{
     \begin{block}{Tangent cone $\cK$}
         Given a constraint set $\cC \subseteq \Rbb^d$, the cone of all feasible 
-        directions from the optimum $x^* \in \cC$ is defined as
+        directions from the optimum $\xstar \in \cC$ is defined as
         \[
             \cK := \mathrm{clconv}\set{
-                z \in \Rbb^d \mmid z = t (x - x^*), \; t \geq 0, \;
+                z \in \Rbb^d \mmid z = t (x - \xstar), \; t \geq 0, \;
                 x \in \cC
             }
         \]
@@ -98,6 +126,12 @@
         A \cK := \set{A z \in \Rbb^n \mmid z \in \cK}
     \]}
     \only<2>{
+    \begin{figure}[h]
+        \centering
+        \includesvg[width=0.5\linewidth]{geogebra-export}
+        \caption{rays of $\cK$ shown in black}
+    \end{figure}}
+    \only<3>{
         \begin{block}{Gaussian width}
             Given a set $S \subseteq \Rbb^n$, we define its \textbf{Gaussian 
             width} as
@@ -108,7 +142,6 @@
         \end{block}
         \textbf{Interpretation}: in a probabilistic scenario, sets with large 
         gaussian width will exhibit more degrees of freedom.
-        %TODO: find an example for the above
     }
 \end{frame}
 

@@ -29,17 +29,17 @@
     % Convex programs nice, forms with closed solutions, or iterative methods
     % with efficient steps that can be computed analytically
     \begin{itemize}
-    \item<1-> Convex Optimization is a fundamental tool in engineering, 
+    \item<1-> Convex Optimization is a fundamental tool in engineering,
     statistics, and other disciplines.
     \item<2-> Attractive property: convex programs can be solved to global
     optimality (in practice, $\epsilon$-close to the global optimum)
-    \item<3-> Plethora of theoretical (e.g. convergence, optimality conditions) 
+    \item<3-> Plethora of theoretical (e.g. convergence, optimality conditions)
     and practical results (e.g. algorithms, accelerated methods).
     \end{itemize}
 \end{frame}
 %
 \begin{frame}{...and a Curse (of Dimensionality)}
-    While many convex problems can be solved in polynomial time, \textit{not 
+    While many convex problems can be solved in polynomial time, \textit{not
     all polynomials were created equal}.
     \linebreak
     \begin{block}<2->{An example: linear regression}
@@ -51,7 +51,7 @@
         \begin{align*}
             \mbox{Minimize } & \norm{Ax - y}_2^2
         \end{align*}
-        Closed-form solution, but requires matrix inversion 
+        Closed-form solution, but requires matrix inversion
         ($\sim \mathcal{O}(n^3)$)
     \end{block}
 \end{frame}
@@ -65,9 +65,9 @@
     \end{itemize}
     \begin{block}{Examples}
         \begin{enumerate}
-            \item $s$-sparse vectors $\Rightarrow$ $\norm{x}_{1} \leq s$ 
+            \item $s$-sparse vectors $\Rightarrow$ $\norm{x}_{1} \leq s$
             (also known as \textit{basis pursuit}) \\
-            \item $\rank(A) \leq r$ $\Rightarrow$ $\norm{A}_{*} \leq r$ 
+            \item $\rank(A) \leq r$ $\Rightarrow$ $\norm{A}_{*} \leq r$
             (nuclear norm regularization)
         \end{enumerate}
     \end{block}
@@ -79,12 +79,12 @@
 %% Overview of technique
 \begin{frame}{Random projections}
     %TODO: Cite JL
-    Random projections go back at least as far as 1984: Johnson and 
+    Random projections go back at least as far as 1984: Johnson and
     Lindenstrauss showed that we can project a set of $m$ points from $\Rbb^d$
-    in a subspace of dimension $\Theta\left( \frac{\log m}{\epsilon^2} \right)$ 
+    in a subspace of dimension $\Theta\left( \frac{\log m}{\epsilon^2} \right)$
     without distorting the distances between them more than $\epsilon$.
     \linebreak[2]
-    \textbf{General idea}: project to low dimensional subspace and solve the 
+    \textbf{General idea}: project to low dimensional subspace and solve the
     problem efficiently there.
 \end{frame}
 
@@ -94,24 +94,41 @@
         \xstar \in \argmin_{x \in \cC} \overbrace{\norm{Ax - y}_2^2}^{f(x)},
         \quad A \in \Rbb^{n \times d}, y \in \Rbb^n.
     \]
-    
+
     \textbf{Sketched} program:
     \[
-        \xhat = \argmin_{x \in \cC} \norm{{\color{blue} S}(Ax - y)}_2^2, 
+        \xhat = \argmin_{x \in \cC} \norm{{\color{blue} S}(Ax - y)}_2^2,
         \quad S \in \Rbb^{m \times n}, \; m < n.
     \]
-    
+
     \only{\textbf{\color{red} Question:}
     \[
         m \geq \; ??? \Rightarrow f(\xhat) \leq (1 + \delta)^2 f(\xstar)
     \]}<2->
 \end{frame}
 
+\begin{frame}{Sketching matrices}
+    Different choices of sketching matrix $S$:
+    \begin{itemize}
+    \item \textbf{subgaussian} sketch: rows $s_i$ are i.i.d. subgaussian, i.e.
+    \[
+        \prob{\abs{\ip{s_i, u}} \geq t} \leq 2e^{-\frac{t^2}{2 \sigma^2}}, \;
+        \forall t > 0.
+    \]
+    E.g. Gaussian or Rademacher vectors
+    \item \textbf{randomized orthogonal} sketch: $s_i$ are i.i.d. orthonormal
+    rows satisfying $s_i = \sqrt{n} D H^\top p_i$, where $D$ a random
+    diagonal matrix, $H$ the Hadamard matrix, and $p_i$ chosen uniformly from
+    the canonical basis of $\Rbb^n$.
+    \end{itemize}
+\end{frame}
+
+
 %% Fundamental dependence
 \begin{frame}{Key quantities}
     \only<1>{
     \begin{block}{Tangent cone $\cK$}
-        Given a constraint set $\cC \subseteq \Rbb^d$, the cone of all feasible 
+        Given a constraint set $\cC \subseteq \Rbb^d$, the cone of all feasible
         directions from the optimum $\xstar \in \cC$ is defined as
         \[
             \cK := \mathrm{clconv}\set{
@@ -133,23 +150,47 @@
     \end{figure}}
     \only<3>{
         \begin{block}{Gaussian width}
-            Given a set $S \subseteq \Rbb^n$, we define its \textbf{Gaussian 
+            Given a set $S \subseteq \Rbb^n$, we define its \textbf{Gaussian
             width} as
             \[
-                \mathbb{W}(S) := \expec[g]{\sup_{z \in S} 
+                \mathbb{W}(S) := \expec[g]{\sup_{z \in S}
                 \abs{\ip{g, z}}}, \quad g \sim \cN(0, I_n)
             \]
         \end{block}
-        \textbf{Interpretation}: in a probabilistic scenario, sets with large 
+        \textbf{Interpretation}: in a probabilistic scenario, sets with large
         gaussian width will exhibit more degrees of freedom.
-    }
-\end{frame}
 
-\begin{frame}{Key quantities}
-    
+        \begin{center}
+        Quantity of interest: \fcolorbox{black}{red!20}{\centering
+        $
+            \displaystyle
+            \mathbb{W}(A\cK) := \expec[g]
+            {\sup_{z \in A\cK \cap \cS^{n-1}} \abs{\ip{g, z}}}
+        $}
+        \end{center}
+    }
 \end{frame}
 
 %% MAIN: Presentation of main result(s), what is guaranteed and what's not
 \section{Main result}
+\begin{frame}{Main result - subgaussian sketch}
+    \begin{block}{Theorem 1}
+        Pick $S \in \Rbb^{m \times n}$ according to the subgaussian model.
+        There exist universal constants $c_0, c_1,
+        c_2 > 0$ such that, $\forall \delta \in (0, 1)$, when
+        \(
+            m \geq \frac{c_0}{\delta^2} \mathbb{W}^2(A \cK) \), it holds that
+        \[
+            \prob{f(\hat{x}) \leq (1 + \delta)^2 f(x)}
+            \geq 1 - c_1 e^{-c_2 m \delta^2}.
+        \]
+    \end{block}
+    \only{How is this relevant?
+    \begin{itemize}
+    \item<3-> it always holds that $\mathbb{W}^2(A \cK) \leq n$
+    \item<4-> for many sets $A \cK$, it is \textbf{much} smaller!
+    (e.g. low rank matrices)
+    \end{itemize}}<2->
+\end{frame}
 
 \end{document}

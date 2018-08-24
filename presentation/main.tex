@@ -1,14 +1,19 @@
-\documentclass[11pt]{beamer}
+\documentclass[10pt]{beamer}
 
 \usepackage{default}
+\usepackage{xltxtra}
+\usepackage{fontspec}
 \usepackage{../latex-macros/macros/latex-macros}
 %\usefonttheme[onlymath]{serif}
 \usefonttheme{professionalfonts}
+
 \usepackage{svg}
-\usepackage{pgf,tikz}
+\usepackage{pgf}
+\usepackage{tikzducks, tikz}
 \usetikzlibrary{arrows}
 \usepackage{mathrsfs}
-
+\usepackage[sort]{natbib}
+\bibliographystyle{humannat}
 \mode<presentation>
 {
     \usetheme
@@ -85,7 +90,7 @@
     without distorting the distances between them more than $\epsilon$.
     \linebreak[2]
     \textbf{General idea}: project to low dimensional subspace and solve the
-    problem efficiently there.
+    problem efficiently there to obtain $\xhat$.
 \end{frame}
 
 \begin{frame}{Sketching for quadratic programs}
@@ -94,17 +99,19 @@
         \xstar \in \argmin_{x \in \cC} \overbrace{\norm{Ax - y}_2^2}^{f(x)},
         \quad A \in \Rbb^{n \times d}, y \in \Rbb^n.
     \]
-
-    \textbf{Sketched} program:
+    \textbf{\color{cred} Sketched} program:
     \[
-        \xhat = \argmin_{x \in \cC} \norm{{\color{blue} S}(Ax - y)}_2^2,
+        \xhat \in \argmin_{x \in \cC} \norm{{\color{cred} S}(Ax - y)}_2^2,
         \quad S \in \Rbb^{m \times n}, \; m < n.
     \]
-
-    \only{\textbf{\color{red} Question:}
-    \[
-        m \geq \; ??? \Rightarrow f(\xhat) \leq (1 + \delta)^2 f(\xstar)
-    \]}<2->
+    \only{\begin{figure}[h]
+        \centering
+        \begin{tikzpicture}[scale=1.2]
+            \duck[think={\tiny{How small $m$?}}, bubblecolour= 
+            white!35!cred!25,
+            squareglasses=blue!50!black]
+        \end{tikzpicture}
+    \end{figure}}<2->
 \end{frame}
 
 \begin{frame}{Sketching matrices}
@@ -173,6 +180,16 @@
 
 %% MAIN: Presentation of main result(s), what is guaranteed and what's not
 \section{Main result}
+
+\begin{frame}{Main results - in a nutshell}
+    \begin{itemize}
+    \item<1-> $m$ should not depend on the ambient dimension, but rather the
+        \textbf{statistical} dimension!
+    \item<2-> if the sketching matrix is structured, expect to pay a small price
+        for the randomness lost
+    \end{itemize}
+\end{frame}
+
 \begin{frame}{Main result - subgaussian sketch}
     \begin{block}{Theorem 1}
         Pick $S \in \Rbb^{m \times n}$ according to the subgaussian model.
@@ -185,12 +202,78 @@
             \geq 1 - c_1 e^{-c_2 m \delta^2}.
         \]
     \end{block}
-    \only{How is this relevant?
-    \begin{itemize}
-    \item<3-> it always holds that $\mathbb{W}^2(A \cK) \leq n$
-    \item<4-> for many sets $A \cK$, it is \textbf{much} smaller!
-    (e.g. low rank matrices)
-    \end{itemize}}<2->
+    \vspace{1em}
+    \begin{columns}
+        \begin{column}{0.49 \textwidth}
+            \centering
+            \only{
+            \begin{tikzpicture}[scale=1.1]
+                \duck[speech={\scriptsize So what?},
+                      bubblecolour=white!35!cred!25,
+                      squareglasses=blue!50!black]
+            \end{tikzpicture}}<2-3>
+            \only{
+            \begin{tikzpicture}[scale=1.1]
+                \duck[speech={\tiny $
+                    \substack{\text{Sounds sketchy,}\\\text{but OK}}$},
+                      bubblecolour=white!35!cred!25,
+                      squareglasses=blue!50!black]
+            \end{tikzpicture}}<4>
+        \end{column}
+        \begin{column}{0.49 \textwidth}
+            \only{
+            \begin{itemize}
+                \item always true: $\mathbb{W}^2(A \cK) \leq n$
+                \item for many sets $A \cK$, \textbf{much} smaller!
+                (e.g. low rank matrices)
+                \end{itemize}}<3->
+        \end{column}
+    \end{columns}
 \end{frame}
+
+%\begin{frame}{Main result - ROS sketch}
+%    A similar result holds for randomized orthonormal systems (ROS), with
+%    an extra $\log $ factor:
+%    \begin{block}{Theorem 2}
+%        
+%    \end{block}
+%\end{frame}
+
+\section{Some concrete examples}
+
+\begin{frame}{Unconstrained least squares}
+    Consider the sketched problem:
+    \begin{align*}
+        \inf_{x \in \Rbb^n} \norm{S(Ax - y)}_2^2
+    \end{align*}
+    Intuition: complexity of the problem depends on $\rank(A)$ \linebreak
+    
+    \begin{center}
+        {\color{cred} \textbf{How big is} $\mathbb{W}(A \cK)$?} \\
+        \only{\textbf{\color{cred} Answer}: Less than $\sqrt{\rank(A)}$!}<2->
+    \end{center}
+\end{frame}
+
+\begin{frame}{Unconstrained least squares}
+    \begin{block}{Corollary 2(a) in~\cite{PilWain15}}
+        Consider the problem $\inf_{x \in \Rbb^n} \norm{Ax - y}_2^2$ and its
+        sketched version $\inf_{x \in \Rbb^n} \norm{S(Ax - y)}_2^2, \;
+        S \in \Rbb^{m \times n}$. If $m \geq c_0 \frac{\rank(A)}{\delta^2}$, the
+        sketched solution satisfies
+        \[
+            \prob{f(\xhat) \leq (1 + \delta)^2 f(\xstar)}
+            \geq 1 - c_1 \exp\left(-c_2 m \delta^2\right).
+        \]
+    \end{block}
+    \vspace{1em}
+    
+    \textbf{Proof sketch}:
+        Write $Au = \sum_{i=1}^{\rank(A)} \lambda_i a_i$, where 
+        $\set{a_i}_{i=1}^{\rank(A)}$ is an orthonormal basis of  
+        $\mathrm{im}(A)$. Plug into the definition of $\mathbb{W}(A \cK)$
+        and apply Theorem 1.
+\end{frame}
+
+\bibliography{references}
 
 \end{document}

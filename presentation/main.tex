@@ -20,6 +20,8 @@
     [navbar=true,colorblocks=true,pagenumbers=true]{Cornell}
 }
 
+\usepackage[skins]{tcolorbox}
+
 \newcommand{\xstar}{x^{\star}}
 
 \begin{document}
@@ -107,7 +109,7 @@
     \only{\begin{figure}[h]
         \centering
         \begin{tikzpicture}[scale=1.2]
-            \duck[think={\tiny{How small $m$?}}, bubblecolour= 
+            \duck[think={\tiny{How small $m$?}}, bubblecolour=
             white!35!cred!25,
             squareglasses=blue!50!black]
         \end{tikzpicture}
@@ -188,6 +190,11 @@
     \item<2-> if the sketching matrix is structured, expect to pay a small price
         for the randomness lost
     \end{itemize}
+    \vspace{1em}
+    \only{\centering $\delta$-optimality:
+        \fcolorbox{black}{cred!20}{
+            $f(\hat{x}) \leq (1 + \delta)^2 f(\xstar)$
+        }}<3->
 \end{frame}
 
 \begin{frame}{Main result - subgaussian sketch}
@@ -195,12 +202,12 @@
         Pick $S \in \Rbb^{m \times n}$ according to the subgaussian model.
         There exist universal constants $c_0, c_1,
         c_2 > 0$ such that, $\forall \delta \in (0, 1)$, when
-        \(
-            m \geq \frac{c_0}{\delta^2} \mathbb{W}^2(A \cK) \), it holds that
         \[
-            \prob{f(\hat{x}) \leq (1 + \delta)^2 f(x)}
-            \geq 1 - c_1 e^{-c_2 m \delta^2}.
-        \]
+            m \geq \frac{c_0}{\delta^2} \mathbb{W}^2(A \cK), \]
+        the sketched solution is $\delta$-optimal with probability at least
+        \(
+            1 - c_1 e^{-c_2 m \delta^2}.
+        \)
     \end{block}
     \vspace{1em}
     \begin{columns}
@@ -235,7 +242,7 @@
 %    A similar result holds for randomized orthonormal systems (ROS), with
 %    an extra $\log $ factor:
 %    \begin{block}{Theorem 2}
-%        
+%
 %    \end{block}
 %\end{frame}
 
@@ -247,7 +254,7 @@
         \inf_{x \in \Rbb^n} \norm{S(Ax - y)}_2^2
     \end{align*}
     Intuition: complexity of the problem depends on $\rank(A)$ \linebreak
-    
+
     \begin{center}
         {\color{cred} \textbf{How big is} $\mathbb{W}(A \cK)$?} \\
         \only{\textbf{\color{cred} Answer}: Less than $\sqrt{\rank(A)}$!}<2->
@@ -266,12 +273,102 @@
         \]
     \end{block}
     \vspace{1em}
-    
+
     \textbf{Proof sketch}:
-        Write $Au = \sum_{i=1}^{\rank(A)} \lambda_i a_i$, where 
-        $\set{a_i}_{i=1}^{\rank(A)}$ is an orthonormal basis of  
+        Write $Au = \sum_{i=1}^{\rank(A)} \lambda_i a_i$, where
+        $\set{a_i}_{i=1}^{\rank(A)}$ is an orthonormal basis of
         $\mathrm{im}(A)$. Plug into the definition of $\mathbb{W}(A \cK)$
         and apply Theorem 1.
+\end{frame}
+
+
+\begin{frame}{$\ell_1$-constrained least squares}
+    Consider one of the equivalent formulations of the LASSO, given by
+    \[
+        \xstar \in \argmin_{\norm{x}_1 \leq R} \norm{Ax - y}_2^2
+    \]
+    Case of interest: $\xstar$ sparse ($\abs{\set{i \in [d]: x_i \neq 0}} = k
+    \ll
+    d$),
+    unique.
+    \vspace{1em}
+    \begin{center}
+        \begin{tcolorbox}[colback=cred!20, colframe=cred,
+            title={\textbf{Key quantities}: $\ell_1$-restricted eigenvalues},
+            boxrule=0.2mm, width=(0.75 \linewidth)]
+        \begin{align}
+            \begin{aligned}
+                \gamma_k^-(A) & \triangleq
+                    \inf_{\substack{\norm{z}_2 = 1 \\ \norm{z}_1 \leq 2
+                    \sqrt{k}}} \norm{Az}_2^2 \\
+                \gamma_k^+(A) & \triangleq
+                    \sup_{\substack{\norm{z}_2 = 1 \\ \norm{z}_1 \leq
+                    2 \sqrt{k}}} \norm{Az}_2^2
+            \end{aligned}
+            \label{eq:ell_1_eigs}
+        \end{align}
+        \end{tcolorbox}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Calculating $\mathbb{W}(A \cK)$ - 1}
+    \begin{itemize}
+        \item
+        Tangent cone: $\cK = \set{\Delta : \ip{\Delta_S,
+        \mathrm{sign}(x^*_S)} + \norm{\Delta_{S^c}}_1 \leq 0}$,
+        where $S$ support of $\xstar$. By C-S, gives
+        \begin{equation}
+            \norm{\Delta_{S^c}}_1 \leq \norm{\Delta_S}_2
+            \underbrace{\norm{\mathrm{sign}(\xstar_S)}_2}_{= \sqrt{k}}
+            \label{eq:delta_ineq}
+        \end{equation}
+
+        \item Chain of (in)equalities:
+        \begin{align*}
+            \norm{\Delta}_1 &= \norm{\Delta_S}_1 + \norm{\Delta_{S^c}}_1
+            \leq \sqrt{k} \norm{\Delta_S}_2 +
+            \underbrace{\sqrt{k} \norm{\Delta_{S}}_2}_{
+                \text{from } \eqref{eq:delta_ineq}}
+            \leq 2 \sqrt{k} \norm{\Delta}_2
+        \end{align*}
+        \item $\norm{A \Delta}_2 = 1 \Rightarrow
+        \norm{A \Delta}_2 \geq \norm{\Delta}_2 \sqrt{\gamma_{k}^- (A)}$
+    \end{itemize}
+\end{frame}
+\begin{frame}{Calculating $\mathbb{W}(A \cK)$ - 2}
+    Combine all of the above to obtain
+    \begin{align*}
+        \expec{\abs{\ip{A \Delta, g}}} &= \expec{\abs{\ip{\Delta, A^\top g}}}
+        \overset{(\text{H{\"o}lder})}{\leq}
+        \expec{\norm{\Delta}_1
+        \infnorm{A^\top g}} \\
+        & \leq \frac{2 \sqrt{k} \expec{\infnorm{A^\top g}}}{
+        \sqrt{\gamma_k^-(A)}} =
+        \frac{2 \sqrt{k}}{\sqrt{\gamma_k^-(A)}}
+        \expec{\max_{i \in [d]} \abs{a_i^\top g}}
+    \end{align*}
+    Observe: $a_i^\top g \sim \cN(0, \norm{a_i}_2^2)$ so by a standard argument:
+    \[
+        \mathbb{W}(A \cK) \leq 6 \sqrt{\frac{k \log d}{\gamma_k^-(A)}}
+        \max_{i \in [d]} \norm{a_i}_2
+    \]
+\end{frame}
+
+\begin{frame}{Calculating $\mathbb{W}(A \cK)$ - 3}
+    Finally: $A \cK \subseteq \mathrm{Im}(A)$, so
+    \[
+        \mathbb{W}(A\cK) \leq \min\set{\rank(A),
+        2 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]} \norm{a_i}_2}
+    \]
+    \begin{block}{Corollay 3a in~\cite{PilWain15}}
+        Consider a sub-gaussian sketch applied to the $\ell_1$-constrained
+        least squares. The solution is $\delta$-optimal for
+        \[
+            m \geq \frac{c_0}{\delta^2} \min\set{\rank(A),
+            6 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]}
+            \norm{a_i}_2}.
+        \]
+    \end{block}
 \end{frame}
 
 \bibliography{references}

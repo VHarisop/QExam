@@ -84,6 +84,37 @@ $\tilde{g} \sim \cN(0, I_r)$ itself. From the above:
     \sqrt{\rank(A)}.
 \end{align*}
 
+\paragraph{Details for Corollary 3a}
+Note the following: when $X_i \sim \cN(0, \sigma_i^2)$, it holds
+that~\cite[Eq. (3.13)]{LedTal13}:
+\begin{equation}
+    \expec{\max_{i \in [n]} \abs{X_i}} \leq 3 \sqrt{\log n} \max_{i \in [n]}
+    \expec{X_i^2}^{1/2}
+    \label{eq:expected_sup_gaussian}
+\end{equation}
+
+We have the following characterization for the tangent cone, when the support of
+$\bar{x}$ is $S$:
+\[
+    T_{\set{z \in \Rbb^d: \norm{z}_1 \leq r}}(\bar{x})
+    = \set{\Delta: \ip{\Delta_S, \mathrm{sign}(\bar{x}_S)}
+           + \norm{\Delta_{S^c}}_1 \leq 0}
+\]
+An immediate consequence, lower bounding the above by the C-S inequality, is:
+\begin{equation}
+    \norm{\Delta_{S^c}}_1 \leq \norm{\Delta_S}_2 \norm{\mathrm{sign}(\bar{x}_S)}
+    \leq \sqrt{\abs{S}} \norm{\Delta_S}_2.
+    \label{eq:delta_ineq}
+\end{equation}
+Observe the next chain of inequalities:
+\begin{align*}
+    \norm{\Delta}_1 &= \norm{\Delta_S}_1 + \norm{\Delta_{S^c}}_1
+    \overset{\norm{z}_1 \leq \sqrt{d} \norm{z}_2}{\leq}
+        \sqrt{\abs{S}} \norm{\Delta_S}_2 + \norm{\Delta_{S^c}}_1 \\
+    &\overset{\eqref{eq:delta_ineq}}{\leq}
+        2 \sqrt{\abs{S}} \norm{\Delta_S}_2 \leq 2 \sqrt{\abs{S}} \norm{\Delta}_2
+\end{align*}
+
 \bibliographystyle{plain}
 \bibliography{references}
 

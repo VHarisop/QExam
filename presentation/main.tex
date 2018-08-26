@@ -4,6 +4,7 @@
 \usepackage{xltxtra}
 \usepackage{fontspec}
 \usepackage{../latex-macros/macros/latex-macros}
+\usepackage{cancel}
 %\usefonttheme[onlymath]{serif}
 \usefonttheme{professionalfonts}
 
@@ -27,6 +28,8 @@
 \begin{document}
 
 \title{Randomized Sketches of Convex Programs with Sharp Guarantees}
+\subtitle{With the help of \texttt{tikzducks}}
+\author{Mert Pilanci \& Martin Wainwright}
 \frame{\titlepage}
 \frame{\tableofcontents}
 
@@ -36,7 +39,7 @@
     % Convex programs nice, forms with closed solutions, or iterative methods
     % with efficient steps that can be computed analytically
     \begin{itemize}
-    \item<1-> Convex Optimization is a fundamental tool in engineering,
+    \item<1-> Convex Optimization is fundamental in engineering,
     statistics, and other disciplines.
     \item<2-> Attractive property: convex programs can be solved to global
     optimality (in practice, $\epsilon$-close to the global optimum)
@@ -256,10 +259,18 @@
     Intuition: complexity of the problem depends on $\rank(A)$ \linebreak
 
     \begin{center}
-        {\color{cred} \textbf{How big is} $\mathbb{W}(A \cK)$?} \\
-        \only{\textbf{\color{cred} Answer}: Less than $\sqrt{\rank(A)}$!}<2->
+        {\color{cred} \textbf{How big is} $\mathbb{W}(A \cK)$?}
+        \only{
+            \begin{tikzpicture}[remember picture, overlay]
+                \node[opacity=0.5,inner sep=1pt] at (current page.south)
+                {\includegraphics[width=0.7\paperwidth,height=0.7\paperheight]
+                {images/homer_woohoo.jpg}};
+            \end{tikzpicture}
+            Less than $\sqrt{\rank(A)}$!
+        }<2->
     \end{center}
 \end{frame}
+
 
 \begin{frame}{Unconstrained least squares}
     \begin{block}{Corollary 2(a) in~\cite{PilWain15}}
@@ -347,7 +358,8 @@
         \frac{2 \sqrt{k}}{\sqrt{\gamma_k^-(A)}}
         \expec{\max_{i \in [d]} \abs{a_i^\top g}}
     \end{align*}
-    Observe: $a_i^\top g \sim \cN(0, \norm{a_i}_2^2)$ so by a standard argument:
+    Observe: $a_i^\top g \sim \cN(0, \norm{a_i}_2^2)$ so by a standard
+    argument~\cite[Eq. (3.13)]{LedTal13}
     \[
         \mathbb{W}(A \cK) \leq 6 \sqrt{\frac{k \log d}{\gamma_k^-(A)}}
         \max_{i \in [d]} \norm{a_i}_2
@@ -369,6 +381,144 @@
             \norm{a_i}_2}.
         \]
     \end{block}
+\end{frame}
+
+\section{Proof sketch of main result}
+
+\begin{frame}{Proving Theorem 1 - Overview}
+    Proof of Theorem 1 consists of 2 conceptually simple steps:
+    \begin{enumerate}
+    \item<1-> A deterministic lemma relating $f(\xhat)$ to $f(\xstar)$, which
+        depends on two random quantities, using convex optimality conditions
+    \item<2-> Bounding said quantities with high probability, using
+        concentration inequalities and empirical process theory
+    \end{enumerate}
+    \only{
+    \begin{center}
+    \begin{tcolorbox}[colback=cred!20, colframe=cred,
+        title={Key quantities:},
+        boxrule=0.2mm, width=(\linewidth)]
+        \begin{align}
+            \begin{aligned}
+                Z_1(A \cK) &:= \inf_{v \in A\cK \cap \Sbb^{n-1}}
+                    \frac{1}{m} \norm{Sv}_2^2 \\
+                Z_2(A \cK) &:= \sup_{v \in A\cK \cap \Sbb^{n-1}}
+                    \abs{\ip{u, \left(
+                        \frac{1}{m} S^\top S - I_n
+                    \right) v}} , \; u \in \Sbb^{n - 1}.
+            \end{aligned}
+            \label{eq:z1_z2_def}
+        \end{align}
+    \end{tcolorbox}
+    \end{center}}<2->
+\end{frame}
+
+
+\begin{frame}{From $f(\xhat)$ to $f(\xstar)$}
+\only{
+    Step (1a): define $e = \xhat - \xstar$, rewrite $f(\xhat)$ + triangle ineq.:
+    \[
+        f(\xhat) \leq \left(1 + \frac{\norm{Ae}_2}{\norm{A\xstar - y}_2}
+        \right)^2 f(\xstar).
+    \]
+    Step (1b): write optimality conditions for original and sketched problem to
+    obtain
+    \[
+        \frac{1}{2m} \norm{SAe}_2^2 \leq \abs{
+            \ip{A \xstar - y,
+            \underbrace{\left( \frac{1}{m} S^\top S - I_n\right)}_{=: Q}
+            A e}
+        }
+    \]
+    $e$ belongs to $\cK$ since both original and sketched problem have same
+    constraints, leading to
+    \[
+        \frac{1}{2} Z_1(A \cK) \norm{A e}_2 \leq
+        \norm{A \xstar - y}_2 Z_2(A \cK).
+    \]}<1>
+\only{
+    We've proved the following deterministic lemma:
+    \begin{block}{Lemma 1}
+        For any choice of sketching matrix $S \in \Rbb^{m \times n}$, we have
+        \[
+            f(\xhat) \leq \left(1 + 2 \frac{Z_2(A \cK)}{Z_1(A \cK)} \right)^2
+            f(\xstar).
+        \]
+    \end{block}
+}<2>
+\end{frame}
+
+\begin{frame}{Controlling $Z_1, Z_2$}
+    To show that the ratio in Lemma 1 is small w.h.p, sufficient to bound $Z_1$
+    from below and $Z_2$ from above.
+
+    Proof depends on following result:
+    \begin{block}{Proposition 1 (follows Theorem D from \cite{MenPajTom07})}
+        Let $\set{s_i}_{i=1}^m$ i.i.d from an isotropic $\sigma$-subgaussian
+        distr. $\exists c_1, c_2 > 0$ such that for any
+        $ \cY \subseteq \Sbb^{n - 1} $:
+        \[
+            \sup_{y \in \cY} \abs{
+                y^\top \left( \frac{S^\top S}{m} - I_n \right) y
+            } \leq c_1 \frac{\mathbb{W}(\cY)}{\sqrt{m}} + \delta,
+        \]
+        with probability at least $1 - e^{-c_2 \frac{m \delta^2}{\sigma^4}}$.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Step (2a) - controlling $Z_1$ }
+    Controlling $Z_1$ is easy - apply Prop. 1 with $\cY = A\cK \cap \Sbb^{n-1}$:
+    \begin{align*}
+        \forall v \in A \cK \cap \Sbb^{n-1}:
+        \frac{1}{m} \norm{Sv}^2_2 - \cancelto{1}{v^\top v}
+        & \geq - c_1 \frac{\mathbb{W}(A \cK)}{\sqrt{m}} - \delta \\
+        \Rightarrow
+        \inf_{v \in A\cK \cap \Sbb^{n-1}} \frac{1}{m} \norm{Sv}_2^2 \geq 1 -
+        c_1 \frac{\mathbb{W}(A
+        \cK)}{\sqrt{m}} - \delta
+    \end{align*}
+    Set $m \geq \left( \frac{c_1 \mathbb{W}(A \cK)}{\delta} \right)^2$, relabel
+    as required. \qed
+\end{frame}
+
+\begin{frame}{Step (2b) - controlling $Z_2$}
+\begin{columns}
+    \begin{column}{0.75 \textwidth}
+    Controlling $Z_2(A \cK)$ is more involved: $Z_2$ involves two vectors $u,
+    v$, which dictate a decomposition of $Z_2$ s.t. Prop. 1 is applicable:
+    \[
+        Z_2(A \cK) \leq \sup_{v \in \cV_+} \abs{u^\top Q v} +
+        \sup_{v \in \cV_-} \abs{u^\top Q v}
+    \]
+    For $v \in \cV_+$:
+    \[
+        \abs{u^\top Q v} \leq
+        \underbrace{\frac{1}{2} \abs{(u + v)^\top Q (u + v)}}_{
+            \text{only nontrivial term}}
+        + \underbrace{\frac{1}{2} \abs{u^\top Q u}}_{\cY \gets \set{u}} +
+        \underbrace{\frac{1}{2} \abs{v^\top Q v}}_{\cY \gets \cV_+}
+    \]
+    \end{column}
+    \vrule{}
+    \begin{column}{0.24 \textwidth}
+        \begin{align*}
+            \scalebox{0.8}{$Q := \frac{S^\top S}{m} - I_n$} \\
+            \scalebox{0.8}{$V_+ = \set{v \in A \cK : \ip{u, v} \geq 0}$} \\
+            \scalebox{0.8}{$V_- = \set{v \in A \cK : \ip{u, v} < 0}$}
+        \end{align*}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Step (2b) - controlling the nontrivial term}
+    Define $\cU_+ := \set{\frac{u + v}{\norm{u + v}} \mmid v \in \cV_+}$ and
+    apply Prop. 1 with $\cY = \cU_+$:
+    \[
+        \sup_{v \in \cV_+}
+        \frac{\abs{(u + v)^\top Q (u + v)}}{
+        \underbrace{\norm{u + v}^2}_{\leq 4}}
+        \leq c_1 \frac{\mathbb{W}(\cU_+)}{\sqrt{m}} + \delta.
+    \]
 \end{frame}
 
 \bibliography{references}

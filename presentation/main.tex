@@ -106,7 +106,8 @@
     \]
     \textbf{\color{cred} Sketched} program:
     \[
-        \xhat \in \argmin_{x \in \cC} \norm{{\color{cred} S}(Ax - y)}_2^2,
+        \xhat \in \argmin_{x \in \cC}
+        \underbrace{\norm{{\color{cred} S}(Ax - y)}_2^2}_{g(x)},
         \quad S \in \Rbb^{m \times n}, \; m < n.
     \]
     \only{\begin{figure}[h]
@@ -127,12 +128,13 @@
         \prob{\abs{\ip{s_i, u}} \geq t} \leq 2e^{-\frac{t^2}{2 \sigma^2}}, \;
         \forall t > 0.
     \]
-    E.g. Gaussian or Rademacher vectors
+    Satisfied by Gaussian or Rademacher vectors
     \item \textbf{randomized orthogonal} sketch: $s_i$ are i.i.d. orthonormal
     rows satisfying $s_i = \sqrt{n} D H^\top p_i$, where $D$ a random
     diagonal matrix, $H$ the Hadamard matrix, and $p_i$ chosen uniformly from
     the canonical basis of $\Rbb^n$.
     \end{itemize}
+    Will examine subgaussian case in detail.
 \end{frame}
 
 
@@ -342,8 +344,10 @@
                 \text{from } \eqref{eq:delta_ineq}}
             \leq 2 \sqrt{k} \norm{\Delta}_2
         \end{align*}
-        \item $\norm{A \Delta}_2 = 1 \Rightarrow
-        \norm{A \Delta}_2 \geq \norm{\Delta}_2 \sqrt{\gamma_{k}^- (A)}$
+        \item $\underbrace{\norm{A \Delta}_2 = 1}_{A \Delta \in \Sbb^{n-1}}
+        \Rightarrow
+            \norm{\Delta}_2 \leq \frac{1}{\sqrt{\gamma_{k}^-(A)}}$,
+            from definition of $\gamma_k^-(A)$.
     \end{itemize}
 \end{frame}
 \begin{frame}{Calculating $\mathbb{W}(A \cK)$ - 2}
@@ -372,7 +376,7 @@
         \mathbb{W}(A\cK) \leq \min\set{\rank(A),
         2 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]} \norm{a_i}_2}
     \]
-    \begin{block}{Corollay 3a in~\cite{PilWain15}}
+    \begin{block}{Corollary 3a in~\cite{PilWain15}}
         Consider a sub-gaussian sketch applied to the $\ell_1$-constrained
         least squares. The solution is $\delta$-optimal for
         \[
@@ -458,11 +462,10 @@
         distr. $\exists c_1, c_2 > 0$ such that for any
         $ \cY \subseteq \Sbb^{n - 1} $:
         \[
-            \sup_{y \in \cY} \abs{
-                y^\top \left( \frac{S^\top S}{m} - I_n \right) y
-            } \leq c_1 \frac{\mathbb{W}(\cY)}{\sqrt{m}} + \delta,
+            \prob{\sup_{y \in \cY} \abs{y^\top \left(\frac{1}{m} S^\top S - I_n
+            \right) y} \leq c_1 \frac{\mathbb{W}(\cY)}{\sqrt{m}} + \delta}
+            \geq 1 - e^{-\frac{c_2 m \delta^2}{\sigma^4}}.
         \]
-        with probability at least $1 - e^{-c_2 \frac{m \delta^2}{\sigma^4}}$.
     \end{block}
 \end{frame}
 
@@ -490,7 +493,7 @@
         Z_2(A \cK) \leq \sup_{v \in \cV_+} \abs{u^\top Q v} +
         \sup_{v \in \cV_-} \abs{u^\top Q v}
     \]
-    For $v \in \cV_+$:
+    For $v \in \cV_+$, wlog:
     \[
         \abs{u^\top Q v} \leq
         \underbrace{\frac{1}{2} \abs{(u + v)^\top Q (u + v)}}_{
@@ -519,6 +522,33 @@
         \underbrace{\norm{u + v}^2}_{\leq 4}}
         \leq c_1 \frac{\mathbb{W}(\cU_+)}{\sqrt{m}} + \delta.
     \]
+    Split $v$ into a $u$-parallel and a $u$-orthogonal component, $\Pi(v)$, to
+    obtain
+    \[
+        \underbrace{\expec{\sup_{v \in \cV_+} \abs{\ip{g, \frac{u+v}{\norm{u +
+        v}}}}}}_{= \mathbb{W}(\cU_+)}
+        \leq \underbrace{\expec{\abs{\ip{g, u}}}}_{= \sqrt{\frac{2}{\pi}}} +
+        \underbrace{\expec{\sup_{v \in \cV_+} \abs{\ip{g, \Pi(v)}}}}_{
+        \leq ?}
+    \]
+\end{frame}
+
+\begin{frame}{Step (2b) - controlling the nontrivial term}
+    For the last term, note that
+    \begin{align*}
+        \expec{\ip{g, \Pi(v) - \Pi(v')}^2} &=
+        (\Pi(v) - \Pi(v'))^\top \underbrace{\expec{g g^\top}}_{= I} (\Pi(v) -
+        \Pi(v')) \\
+        &\leq \norm{v - v'}^2 = \expec{\left( \ip{g, v - v'} \right)^2}
+    \end{align*}
+    Using the Sudakov-Fenrique inequality\footnote{see e.g.~\cite[Theorem
+    7.2.11]{Versh18}}, we deduce that
+    \[
+        \expec{\sup_{v \in \cV_+} \abs{\ip{g, \Pi(v)}}}
+        \leq \expec{\sup_{v \in \cV_+} \ip{g, v}} = \mathbb{W}(\cV_+)
+        \leq \mathbb{W}(A \cK \cap \Sbb^{n - 1})
+    \]
+    which completes the bounding of $\mathbb{W}(\cU_+)$.
 \end{frame}
 
 \bibliography{references}

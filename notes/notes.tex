@@ -31,6 +31,12 @@
 \usepackage[square,numbers,sort]{natbib}
 \usepackage{svg}
 
+\newcommand{\xstar}{x^{\star}}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+
 \begin{document}
 
 % Title here
@@ -53,6 +59,51 @@ Sketches of Convex Programs with Sharp Guarantess}~\cite{PilWain15}. Emphasis
 is given on the proof techniques, with additional explanations given for
 several proofs.
 \end{abstract}
+
+\begin{lemma}[Sudakov-Fernique comparison inequality~\cite{Versh18}]
+    \label{lemma:sudakov_fernique}
+    Let $\set{X_{t}}_{t \in T}, \set{Y_t}_{t \in T}$ be two gaussian processes
+    satisfying $\expec{X_t} = \expec{Y_t} = 0, \; \forall t \in T$. If
+    \[
+        \expec{X_t^2} \leq \expec{Y_t^2},
+    \]
+    then it holds that
+    \[
+        \expec{\sup_{t \in T} X_t} \leq \expec{\sup_{t \in T} Y_t}.
+    \]
+\end{lemma}
+
+\begin{proposition}[Corollary of Theorem D in~\cite{MenPajTom07}]
+    Let $\set{s_i}_{i=1}^m$ be i.i.d. centered $\sigma$-subgaussian random
+    variables with unit covariance. Then $\exists c_1, c_2 > 0$ universal
+    constants such that, $\forall \cY \subseteq \Sbb^{n - 1}$, it holds that:
+    \[
+        \prob{\sup_{y \in \cY} \abs{y^\top \left(
+            \frac{1}{m} S^\top S - I_n
+        \right) y} \leq c_1 \frac{\mathbb{W}(\cY)}{\sqrt{m}} + \delta
+        } \geq 1 - e^{-\frac{c_2 m \delta^2}{\sigma^4}}.
+    \]
+\end{proposition}
+\begin{proof}
+    Set $F = \set{\ip{v, \cdot} \mmid v \in A \cK \cap \Sbb^{n-1}}$ and appeal
+    to~\cite[Theorem D]{MenPajTom07}, to obtain that
+    \[
+        \sup_{y \in \cY} \abs{\frac{1}{m} \sum_{i=1}^m
+        v^\top s_i s_i^\top v - \expec{v^\top s_i s_i^\top v}}
+        \leq \theta,
+    \]
+    for any $\theta$ satisfying $\theta \geq \frac{c_1}{\sqrt{m}} \alpha
+    \gamma_2(F, \norm{\cdot}_{\psi_2})$, where $\gamma_2$ is Talagrand's
+    $\gamma_2$-functional. Since $s_i$ are isotropic and subgaussian, the
+    following holds~\cite[Section 2]{MenPajTom07}:
+    \[
+        \gamma_2(F, \norm{\cdot}) \leq
+        \beta \mathbb{W}(A \cK \cap \Sbb^{n - 1})
+    \]
+    Therefore, setting $\theta = \frac{c_1}{\sqrt{m}} \alpha \beta
+    \mathbb{W}(A \cK \cap \Sbb^{n-1})$ and relabelling, gives us the result
+    in the desired form.
+\end{proof}
 
 \paragraph{Details for Corollary 2}
 Consider $r := \rank(A)$. In that case, any element $v \in \mathrm{Im}(A)$ can
@@ -84,6 +135,30 @@ $\tilde{g} \sim \cN(0, I_r)$ itself. From the above:
     \sqrt{\rank(A)}.
 \end{align*}
 
+\paragraph{Details for Lemma 1}
+For Eq. (47), the following argument is made:
+\begin{align*}
+    \ip{A\xstar - y, Ae} &= \ip{A^\top (A\xstar - y), \xhat - \xstar} \geq 0
+\end{align*}
+The above is true by the fact that $\xstar$ is optimal for the
+original problem and the Taylor expansion of $f$: suppose that, for some $z \in
+\cC$, it held that
+\[
+    \ip{\grad f(\xstar), z - \xstar} < 0.
+\]
+The, by the Taylor expansion of $f$, we would get:
+\[
+    f(\xstar + \lambda (z - \xstar)) =
+    f(\xstar) + \lambda \ip{\grad f(\xstar), z - \xstar} + o(\lambda)
+    < f(\xstar),
+\]
+since $\lambda \ip{\grad f(\xstar), z - \xstar} + o(\lambda) < 0$ for
+sufficiently small $\lambda > 0$. Then, $\xstar + \lambda (z - \xstar) \in \cC$
+by the convexity of $\cC$, which would give us a contradiction by our assumption
+on optimality. Hence, $\ip{\grad f(\xstar), \xhat - \xstar} \geq 0$ since we
+know that $\xhat - \xstar \in \cK$ (i.e. a feasible direction).
+This is why Eq. (47) holds.
+
 \paragraph{Details for Corollary 3a}
 Note the following: when $X_i \sim \cN(0, \sigma_i^2)$, it holds
 that~\cite[Eq. (3.13)]{LedTal13}:
@@ -114,6 +189,12 @@ Observe the next chain of inequalities:
     &\overset{\eqref{eq:delta_ineq}}{\leq}
         2 \sqrt{\abs{S}} \norm{\Delta_S}_2 \leq 2 \sqrt{\abs{S}} \norm{\Delta}_2
 \end{align*}
+Consider the case where $\norm{A \Delta}_2 = 1$: then we have that, since all
+$\Delta \in \cK \Rightarrow \norm{\Delta}_1 \leq 2 \sqrt{k}$:
+\[
+    \frac{\norm{A \Delta}_2}{\norm{\Delta}_2} \geq \sqrt{\gamma_k^-(A)}
+    \Rightarrow \norm{\Delta}_2 \leq \frac{1}{\sqrt{\gamma_k^-(A)}}.
+\]
 
 \bibliographystyle{plain}
 \bibliography{references}

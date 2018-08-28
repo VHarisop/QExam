@@ -159,6 +159,34 @@ on optimality. Hence, $\ip{\grad f(\xstar), \xhat - \xstar} \geq 0$ since we
 know that $\xhat - \xstar \in \cK$ (i.e. a feasible direction).
 This is why Eq. (47) holds.
 
+
+\paragraph{Details for Lemma 2}
+Here, we explain how to handle the various quantities that appear in Lemma 2.
+Notice, for an element $v \in \cV_+$:
+\begin{align*}
+	u^\T Q v &= (u + v - v)^\T Q (u + v - u) \\
+		&= (u + v)^\T Q (u + v) - u^\T Q u - v^\T Q u
+		 - \cancel{v^\T Q u} - v^\T Q v + \cancel{v^\T Q u} \\
+		&= (u + v)^\T Q (u + v) - u^\T Q u - v^\T Q v - v^\T Q u \Rightarrow \\
+	2 u^\T Q v &= (u + v)^\T Q (u + v) - u^\T Q u - v^\T Q v \Rightarrow \\
+	\abs{u^\T Q v} &\leq \frac{1}{2} \left(
+		\abs{(u + v)^\T Q (u + v)} + \abs{u^\T Q u} + \abs{v^\T Q v}
+	\right),
+\end{align*}
+where the last equality above follows from the fact that $Q = Q^\T$, which
+implies that $v^\T Q u = u^\T Q v$. The reason we make the distinction in $V_+$
+is briefly explained: we need to normalize the vector $(u + v)$, which gives us
+\[
+	\frac{u + v}{\norm{u + v}_2} =
+	\frac{u + v}{\norm{u}^2 + \norm{v}^2 + 2 \ip{u, v}} =
+	\frac{u + v}{2 + 2 \ip{u, v}}
+\]
+It is easy to see that, had we not made the distinction between $V_+, V_-$,
+then we might as well have $\ip{u, v} = -\norm{u} \norm{v} = -1$ leading to a
+zero denominator. Similary, when we are dealing with $v \in V_-$, we use a
+different decomposition, that is $\frac{u - v}{\norm{u - v}_2}$, for the same
+reason.
+
 \paragraph{Details for Corollary 3a}
 Note the following: when $X_i \sim \cN(0, \sigma_i^2)$, it holds
 that~\cite[Eq. (3.13)]{LedTal13}:
@@ -195,6 +223,91 @@ $\Delta \in \cK \Rightarrow \norm{\Delta}_1 \leq 2 \sqrt{k}$:
     \frac{\norm{A \Delta}_2}{\norm{\Delta}_2} \geq \sqrt{\gamma_k^-(A)}
     \Rightarrow \norm{\Delta}_2 \leq \frac{1}{\sqrt{\gamma_k^-(A)}}.
 \]
+
+\paragraph{From S-Gaussian to Gaussian width}
+We briefly address how the S-gaussian width,
+\[
+	\expec[S, g]{\sup_{z \in A \cK \cap \Sbb^{n-1}}
+		\abs{\ip{g, \frac{Sz}{\sqrt{m}}}}}
+\]
+
+relates to the ordinary gaussian width. We consider the example of the
+$\ell_1$-constrained least squares. Notice that we have the following chain of
+inequalities, for $u$ such that $\norm{u}_1 \leq 2 \sqrt{k} \norm{u}_2,
+\norm{Au}_2 = 1$:
+\begin{align*}
+	\ip{g, \frac{S A u}{\sqrt{m}}} &= \frac{1}{\sqrt{m}}\ip{A^\T S^\T g, u} \\
+		&\overset{(\text{H{\"o}lder})}{\leq} \frac{\norm{u}_1}{\sqrt{m}}
+		 \norm{A^\T S^\T g}_{\infty} = \frac{2 \sqrt{k}}{\sqrt{\gamma_k^-(A)}}
+		 \frac{\norm{A^\T S^\T g}_{\infty}}{\sqrt{m}}
+\end{align*}
+Taking expectations gives us
+\begin{align*}
+	\expec[g, S]{\ip{g, \frac{S A u}{\sqrt{m}}}} &\leq
+	\frac{2 \sqrt{k}}{\sqrt{\gamma_k^-(A)}}
+	\frac{\expec[g, S]{\norm{A^\T S^\T g}_{\infty}}}{\sqrt{m}}
+\end{align*}
+Notice that the vector $S^\T g$ is itself Gaussian with
+\[
+	\frac{S^\T g}{\sqrt{m}} \sim \cN\left(0, \frac{S^\top S}{\sqrt{m}} \right).
+\]
+This gives us the inequality
+\[
+	\expec[g]{\frac{\norm{A^\T S^\T g}_{\infty}}{\sqrt{m}}}
+	\leq 4 \max_{j=1, \dots, d} \frac{\norm{S a_j}_2}{\sqrt{m}}
+		\sqrt{\log d},
+\]
+which follows from the same argument employed for the Gaussian tail bound in
+the Corollary of the subgaussian sketch for $\ell_1$-constrained minimization.
+Now, we refine the above by conditioning on the probability of $\norm{S a_j}_2$
+being large for all vectors $a_j, \; j = 1, \dots, d$.
+That probability has been bounded by Krahmer and Ward~\cite{KraWard11}, which
+proved the following:
+\begin{lemma}[Theorem 3.1 in~\cite{KraWard11}]
+	\label{lemma:JL_embedding_rademacher}
+	Fix $\eta > 0$, $\epsilon \in (0, 1)$, and consider a finite set $E
+	\subseteq \Rbb^n$ such that $\abs{E} = p$. Set $k \geq 40
+	\log\left(\frac{4p}{\eta}\right)$, and suppose that $\Phi \in \Rbb^{m \times
+	n}$ satisfies
+	\[
+		(1 - \delta) \norm{x}_2^2 \leq \norm{\Phi x}_2^2 \leq
+		(1 + \delta) \norm{x}_2^2, \; \forall x : \norm{x}_0 \leq k
+	\]
+	for $\delta \leq \frac{\epsilon}{4}$. Let $\varepsilon \in \Rbb^n$ be a
+		Rademacher sequence. Then with probability exceeding $1 - \eta$, it
+		holds that
+	\[
+		(1 - \epsilon) \norm{x}_2^2 \leq
+		\norm{\Phi \Delta_{\varepsilon} x}_2^2 \leq
+		(1 + \epsilon) \norm{x}_2^2, \;
+		\forall x \in E.
+	\]
+\end{lemma}
+Applying~\cref{lemma:JL_embedding_rademacher} to our case, where $p = d$, and
+setting $\eta = \frac{1}{n}, \; \epsilon = 1$, gives us that
+\[
+	\mathcal{E} = \set{\norm{S a_j}_2 \leq 2 \sqrt{m} \norm{a_j}_2, \;
+	\forall j \in [d]} \Rightarrow
+	\prob{\mathcal{E}^c} \leq \frac{1}{n}.
+\]
+Then, it is simply a matter of conditioning on the event $\mathcal{E}^c$ and
+observing that it always holds that $\frac{\norm{S a_j}_2}{\sqrt{m}} \leq \sqrt{n}
+\norm{a_j}_2 \opnorm{\frac{H^\T D}{\sqrt{m}}} \leq \sqrt{n} \norm{a_j}_2$ to
+obtain
+\begin{align*}
+	\expec[g, S]{\frac{\norm{A^\T S^\T g}_{\infty}}{\sqrt{m}}} &=
+	\expec[S]{4 \max_{j=1,\dots,d} \frac{\norm{S a_j}_2}{\sqrt{m}}
+		\sqrt{\log d} \mmid \mathcal{E}} \prob{\mathcal{E}} +
+	\expec[S]{4 \max_{j=1, \dots, d} \frac{\norm{S a_j}_2}{\sqrt{m}}
+		\sqrt{\log d} \mmid \mathcal{E}^c} \prob{\mathcal{E}^c} \\
+    &\leq \left( 8 \max_{j = 1, \dots, d} \norm{a_j}_2
+      + 4 \frac{\sqrt{n}}{n} \max_{j = 1, \dots, d} \norm{a_j}_2
+      \right) \sqrt{\log d} \\
+	&\leq 12 \max_{j = 1, \dots, d} \norm{a_j}_2 \sqrt{\log d}.
+\end{align*}
+The range for $m \geq c_0 \log^5 n \log d$ is such that the matrix $\Phi$
+in~\cref{lemma:JL_embedding_rademacher} satisfies the desired Restricted
+Isometry Property.
 
 \bibliographystyle{plain}
 \bibliography{references}

@@ -34,6 +34,7 @@
 \newcommand{\xstar}{x^{\star}}
 
 \newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
 \newtheorem{proposition}{Proposition}
 \newtheorem{definition}{Definition}
 
@@ -72,6 +73,22 @@ several proofs.
         \expec{\sup_{t \in T} X_t} \leq \expec{\sup_{t \in T} Y_t}.
     \]
 \end{lemma}
+\begin{corollary}
+    \label{corl:sudakov_fernique_abs}
+    Under the same conditions as in~\cref{lemma:sudakov_fernique}, we obtain
+    \[
+        \expec{\sup_{t \in T} X_t} \leq \expec{\sup_{t \in T} Y_t}
+    \]
+\end{corollary}
+\begin{proof}
+    Essentially an application of Sudakov-Fernique, where we augment our
+    sample with the variables $-X_t, -Y_t$, which gives us
+    \[
+        \sup_{t \in T} X_t = \sup_{t \in T} \max \set{X_t, -X_t}
+        = \sup_{t \in T} \abs{X_t}
+    \]
+    and the result follows since the conditions are still satisfied.
+\end{proof}
 
 \begin{proposition}[Corollary of Theorem D in~\cite{MenPajTom07}]
     Let $\set{s_i}_{i=1}^m$ be i.i.d. centered $\sigma$-subgaussian random
@@ -185,7 +202,18 @@ It is easy to see that, had we not made the distinction between $V_+, V_-$,
 then we might as well have $\ip{u, v} = -\norm{u} \norm{v} = -1$ leading to a
 zero denominator. Similary, when we are dealing with $v \in V_-$, we use a
 different decomposition, that is $\frac{u - v}{\norm{u - v}_2}$, for the same
-reason.
+reason. In that case, we use the decomposition
+\begin{align*}
+    u^\T Q v &= (v + u - v)^\T Q (v + u - u) \\
+        &= v^\T Q v + \cancel{v^\T Q u} - \cancel{v^\T Q u} + (u - v)^\T Q (v -
+        u) + (u - v)^\T Q u \\
+        &= v^\T Q v - (v - u)^\T Q (v - u) + u^\T Q u - v^\T Q u \Rightarrow \\
+    u^\T Q v &= \frac{1}{2} \left(
+        v^\T Q v + u^\T Q u - (v - u)^\T Q (v - u)
+    \right)
+\end{align*}
+Appealing to the triangle inequality again, we can repeat the argument with
+$\cU_- = \set{\frac{u - v}{\norm{u - v}_2} \mmid v \in \cV_-}$.
 
 \paragraph{Details for Corollary 3a}
 Note the following: when $X_i \sim \cN(0, \sigma_i^2)$, it holds
@@ -203,6 +231,41 @@ $\bar{x}$ is $S$:
     = \set{\Delta: \ip{\Delta_S, \mathrm{sign}(\bar{x}_S)}
            + \norm{\Delta_{S^c}}_1 \leq 0}
 \]
+Let us see how we can arrive at this characterization. We start by considering
+the definition of the tangent cone:
+\[
+    \cK = \set{d \in \Rbb^n \mmid \xstar + t d \in \mathcal{C}, \; \forall
+    t \geq 0}
+\]
+Splitting $\xstar$ into $\xstar_S$ and $\xstar_{S^c}$, where $S$ is its support,
+we obtain
+\[
+    \cK = \set{d \in \Rbb^n \mmid \norm{\xstar_S + t d_S}_1
+        + t \norm{d_{S^c}}_1 \leq r}
+\]
+Let us first verify that the description given in the paper is indeed part of
+the tangent cone. Consider the following cases:
+\begin{itemize}
+    \item $\sign(d_i) = \sign(\xstar_i), i \in S$: in that case, we may write
+    \[
+        \norm{\xstar_S + t d_S}_1 + \norm{t d_{S^c}}_1 \leq r \Leftrightarrow
+        \cancel{\norm{\xstar_S}_1} + t \left( \norm{d_S}_1 + \norm{d_{S^c}}
+        \right) \leq \cancel{r}
+    \]
+    which implies that
+    \[
+        \ip{\mathrm{sign}(\xstar_S), d_S} + \norm{d_{S^c}}_1 \leq 0.
+    \]
+    \item Suppose for some $i \in S$ it holds that $\sign(d_i)
+    \neq \sign(\xstar_i)$. In that case, we either have $\xstar_i < 0, d_i > 0$
+    or $\xstar_i > 0, d_i < 0$. In any of those cases, there exists a value of
+    $t$ large enough such that
+    \[
+        \abs{\xstar_i + t d_i} = - \abs{\xstar_i} + t \abs{d_i},
+    \]
+    in which case we can set $t \to \infty$ (as $\cK$ is a cone) violating the
+    constraint.
+\end{itemize}
 An immediate consequence, lower bounding the above by the C-S inequality, is:
 \begin{equation}
     \norm{\Delta_{S^c}}_1 \leq \norm{\Delta_S}_2 \norm{\mathrm{sign}(\bar{x}_S)}

@@ -14,7 +14,7 @@
 \usetikzlibrary{arrows}
 \usepackage{mathrsfs}
 \usepackage[sort]{natbib}
-\bibliographystyle{humannat}
+
 \mode<presentation>
 {
     \usetheme
@@ -22,13 +22,14 @@
 }
 
 \usepackage[skins]{tcolorbox}
-
 \newcommand{\xstar}{x^{\star}}
+
+\allowdisplaybreaks
 
 \begin{document}
 
 \title{Randomized Sketches of Convex Programs with Sharp Guarantees}
-\subtitle{With the help of \texttt{tikzducks}}
+\subtitle{With the help of \texttt{tikzducks} and others}
 \author{Mert Pilanci \& Martin Wainwright}
 \frame{\titlepage}
 \frame{\tableofcontents}
@@ -50,7 +51,7 @@
 %
 \begin{frame}{...and a Curse (of Dimensionality)}
     While many convex problems can be solved in polynomial time, \textit{not
-    all polynomials were created equal}.
+    all polynomials are practical}.
     \linebreak
     \begin{block}<2->{An example: linear regression}
         Noisy linear measurements:
@@ -61,8 +62,8 @@
         \begin{align*}
             \mbox{Minimize } & \norm{Ax - y}_2^2
         \end{align*}
-        Closed-form solution, but requires matrix inversion
-        ($\sim \mathcal{O}(n^3)$)
+        Solving via $QR$ factorization requires
+        ($\sim \mathcal{O}(nd^2)$)
     \end{block}
 \end{frame}
 
@@ -81,8 +82,11 @@
             (nuclear norm regularization)
         \end{enumerate}
     \end{block}
-    In the examples above, the ambient space of the relaxation might be
-    too large!
+
+    \vspace{1em}
+
+    Problem: ambient space of relaxation can be
+    {\color{cred} too large}
 \end{frame}
 
 \section{A sketchy trick: random projections}
@@ -108,7 +112,8 @@
     \[
         \xhat \in \argmin_{x \in \cC}
         \underbrace{\norm{{\color{cred} S}(Ax - y)}_2^2}_{g(x)},
-        \quad S \in \Rbb^{m \times n}, \; m < n.
+        \quad S \in \Rbb^{m \times n}, \; \underbrace{m <
+            \min\set{n, d}}_{\text{ideally}}
     \]
     \only{\begin{figure}[h]
         \centering
@@ -186,7 +191,9 @@
 \end{frame}
 
 %% MAIN: Presentation of main result(s), what is guaranteed and what's not
-\section{Main result}
+\section{Main results}
+
+\subsection{Subgaussian case}
 
 \begin{frame}{Main results - in a nutshell}
     \begin{itemize}
@@ -243,14 +250,6 @@
     \end{columns}
 \end{frame}
 
-%\begin{frame}{Main result - ROS sketch}
-%    A similar result holds for randomized orthonormal systems (ROS), with
-%    an extra $\log $ factor:
-%    \begin{block}{Theorem 2}
-%
-%    \end{block}
-%\end{frame}
-
 \section{Some concrete examples}
 
 \begin{frame}{Unconstrained least squares}
@@ -292,6 +291,13 @@
         $\set{a_i}_{i=1}^{\rank(A)}$ is an orthonormal basis of
         $\mathrm{im}(A)$. Plug into the definition of $\mathbb{W}(A \cK)$
         and apply Theorem 1.
+
+    \vspace{1em}
+
+    \only{	\begin{center}
+    \fcolorbox{black}{cred!20}{
+    Solving sketched problem via QR: $\mathcal{O}(ndm + md^2)$}
+    \end{center} }<2>
 \end{frame}
 
 
@@ -307,16 +313,13 @@
     \vspace{1em}
     \begin{center}
         \begin{tcolorbox}[colback=cred!20, colframe=cred,
-            title={\textbf{Key quantities}: $\ell_1$-restricted eigenvalues},
+            title={\textbf{Key quantity}: $\ell_1$-restricted eigenvalue},
             boxrule=0.2mm, width=(0.75 \linewidth)]
         \begin{align}
             \begin{aligned}
                 \gamma_k^-(A) & \triangleq
                     \inf_{\substack{\norm{z}_2 = 1 \\ \norm{z}_1 \leq 2
-                    \sqrt{k}}} \norm{Az}_2^2 \\
-                \gamma_k^+(A) & \triangleq
-                    \sup_{\substack{\norm{z}_2 = 1 \\ \norm{z}_1 \leq
-                    2 \sqrt{k}}} \norm{Az}_2^2
+                    \sqrt{k}}} \norm{Az}_2^2
             \end{aligned}
             \label{eq:ell_1_eigs}
         \end{align}
@@ -371,7 +374,8 @@
 \end{frame}
 
 \begin{frame}{Calculating $\mathbb{W}(A \cK)$ - 3}
-    Finally: $A \cK \subseteq \mathrm{Im}(A)$, so
+    Finally: $A \cK \subseteq \mathrm{Im}(A)$ $\Rightarrow$ bound from
+    unconstrained LS still valid!
     \[
         \mathbb{W}(A\cK) \leq \min\set{\rank(A),
         2 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]} \norm{a_i}_2}
@@ -380,7 +384,7 @@
         Consider a sub-gaussian sketch applied to the $\ell_1$-constrained
         least squares. The solution is $\delta$-optimal for
         \[
-            m \geq \frac{c_0}{\delta^2} \min\set{\rank(A),
+            m \geq \frac{c_0}{\delta^2} \min\set{\sqrt{\rank(A)},
             6 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]}
             \norm{a_i}_2}.
         \]
@@ -545,12 +549,98 @@
     7.2.11]{Versh18}}, we deduce that
     \[
         \expec{\sup_{v \in \cV_+} \abs{\ip{g, \Pi(v)}}}
-        \leq \expec{\sup_{v \in \cV_+} \ip{g, v}} = \mathbb{W}(\cV_+)
+        \leq \expec{\sup_{v \in \cV_+} \abs{\ip{g, v}}} = \mathbb{W}(\cV_+)
         \leq \mathbb{W}(A \cK \cap \Sbb^{n - 1})
     \]
     which completes the bounding of $\mathbb{W}(\cU_+)$.
 \end{frame}
 
+\begin{frame}{The duck says...}
+    \centering
+    \begin{tikzpicture}[scale=3]
+        \duck[speech={\scalebox{0.8}{What about ROS sketches?}},
+              bubblecolour=white!35!cred!25,
+              squareglasses=blue!50!black]
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{What about ROS sketches?}
+    In a nutshell: faster computations, not so sharp guarantees for $m$.
+    Different quantities at play:
+    \begin{itemize}
+    \item<2-> \textit{S-Gaussian width}:
+            \fcolorbox{black}{red!20}{\centering
+            $
+                \displaystyle
+                \mathbb{W}_S(A\cK) := \expec[g, S]
+                {\sup_{z \in A\cK \cap \cS^{n-1}} \frac{1}{\sqrt{m}}
+                   \abs{\ip{g, SAz}}}
+            $} \\
+        $\triangleright$ can be close to $\mathbb{W}(A \cK)$.
+    \item<3-> \textit{Rademacher complexity}:
+            \fcolorbox{black}{red!20}{\centering
+            $
+                \displaystyle
+                \mathbb{R}(A\cK) := \expec[\varepsilon]
+                {\sup_{z \in A\cK \cap \cS^{n-1}} \abs{\ip{\varepsilon, z}}}
+            $} \\
+        $\triangleright$ bounded above by a constant times $\mathbb{W}(A \cK)$.
+    \end{itemize}
+    \vspace{1em}
+    \only{
+    Caveat: $
+    \frac{m}{\log m} = \Omega\left\{\left( \mathbb{R}^2(A \cK) + \log n \right)
+    \mathbb{W}^2_S(A \cK)\right\} $, best $\cK$-agnostic bound obtained in
+    paper}<4>
+\end{frame}
+
+\begin{frame}{Sharpening bounds for ROS sketches}
+    Obtaining sharper bounds requires tangent cone $\cK$ to be more structured.
+    \vspace{1em}
+
+    Example - $\cK$ is a subspace:
+    \begin{itemize}
+    \item $Z_1(A \cK) \geq 1 - \delta, Z_2(A \cK) \leq \frac{3}{2} \delta$,
+    as long as $m = \Omega(\log^4 n \cdot \rank(A))$
+    \item \textbf{Proof sketch}: relax $A \cK \cap \Sbb^{n-1}$ to
+    $A \cK \cap \mathbb{B}_2^n$, take $\epsilon$-net, and appeal to a JL
+    property for finite sets of points from~\cite{KraWard11}
+    \end{itemize}
+
+    General pattern for sharpening bounds (not covered here): reduction to
+    finite maxima.
+\end{frame}
+
+\section{Discussion}
+
+\begin{frame}{Disclaimer}
+    \begin{itemize}
+        \item We described a randomized method to $(1 + \delta)^2$ approximate
+        the optimal \textit{\color{cred} cost} with high probability
+        \item We did \textbf{not} give any guarantees about approximating the
+        optimal \textit{\color{blue} solution}, $\xstar$
+    \end{itemize}
+    Addressed in other works, e.g. Iterative Hessian sketch~\cite{PilWain16},
+    Newton sketch~\cite{PilWain17}.
+
+    \vspace{1em}
+
+    \only{
+    \begin{center}
+        \fcolorbox{black}{green!20}{
+        Takeaway: \textit{randomized methods work!} (pro\{v, b\}ably)}
+    \end{center}}<2>
+\end{frame}
+
+\begin{frame}{~}
+    \begin{center}
+        \Large Thank you!
+    \end{center}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\bibliographystyle{plain}
 \bibliography{references}
+\end{frame}
 
 \end{document}

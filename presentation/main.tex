@@ -112,7 +112,7 @@
     \[
         \xhat \in \argmin_{x \in \cC}
         \underbrace{\norm{{\color{cred} S}(Ax - y)}_2^2}_{g(x)},
-        \quad S \in \Rbb^{m \times n}, \; \underbrace{m <
+        \quad S \in \Rbb^{m \times n}, \; \underbrace{m \ll
             \min\set{n, d}}_{\text{ideally}}
     \]
     \only{\begin{figure}[h]
@@ -377,16 +377,16 @@
     Finally: $A \cK \subseteq \mathrm{Im}(A)$ $\Rightarrow$ bound from
     unconstrained LS still valid!
     \[
-        \mathbb{W}(A\cK) \leq \min\set{\rank(A),
+        \mathbb{W}(A\cK) \leq \min\set{\sqrt{\rank(A)},
         2 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]} \norm{a_i}_2}
     \]
     \begin{block}{Corollary 3a in~\cite{PilWain15}}
         Consider a sub-gaussian sketch applied to the $\ell_1$-constrained
         least squares. The solution is $\delta$-optimal for
         \[
-            m \geq \frac{c_0}{\delta^2} \min\set{\sqrt{\rank(A)},
-            6 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]}
-            \norm{a_i}_2}.
+            m \geq \frac{c_0}{\delta^2} \min\set{\rank(A),
+            \left( 6 \sqrt{\frac{k \log d}{\gamma_k^-(A)}} \max_{i \in [d]}
+            \norm{a_i}_2 \right)^2}.
         \]
     \end{block}
 \end{frame}
@@ -484,8 +484,8 @@
         c_1 \frac{\mathbb{W}(A
         \cK)}{\sqrt{m}} - \delta
     \end{align*}
-    Set $m \geq \left( \frac{c_1 \mathbb{W}(A \cK)}{\delta} \right)^2$, relabel
-    as required. \qed
+    Set $m \geq \left( \frac{\sqrt{c_1} \mathbb{W}(A \cK)}{\delta} \right)^2$.
+    \qed
 \end{frame}
 
 \begin{frame}{Step (2b) - controlling $Z_2$}
